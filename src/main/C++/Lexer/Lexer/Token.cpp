@@ -2,7 +2,14 @@
 #include <string>
 
 
+/*
 
+Professor: Jose M Garrido
+Class: Concepts of Programming Langugaes
+Groupd Members: Juan E Tenorio Arzola, Andrew Shatz, Thomas Nguyen
+Project: 2nd Deliverable
+
+*/
 
 
 Token::Token() {
@@ -13,9 +20,10 @@ Token::Token(bool closed) {
 	this->closed = closed;
 }
 
-Token::Token(std::string token, std::string lexeme) {
+Token::Token(std::string token, std::string lexeme, int line) {
 	this->lexeme = lexeme;
 	this->token = token;
+	this->line = line;
 }
 
 
@@ -66,5 +74,10 @@ std::string Token::getLexeme() {
 std::string Token::getToken() {
 
 	return token;
+}
+
+int Token::getLineNum() {
+
+	return line;
 }
 

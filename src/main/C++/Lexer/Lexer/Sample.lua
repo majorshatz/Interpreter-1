@@ -1,14 +1,13 @@
-int a = 6 end
-if(a == b )
-	while( )
+if my_var *2 == my_other_var then 
+--do something
+end
+type a
+while a == b do
+	if c == a/5 then
+	--check something
+	end
+	if var_a == k_var then
+	-- check something else
+
 	end
 end
-this is not a comment --This is a coment
- c <= a
- c < a
- n <=m
- n <m
-test
-B - A = 0 end
-C  * G = 10 end
-F / T = 20 end

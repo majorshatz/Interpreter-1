@@ -1,6 +1,11 @@
-// Lexer.cpp : Defines the entry point for the console application.
-//
+/*
 
+Professor: Jose M Garrido
+Class: Concepts of Programming Langugaes
+Groupd Members: Juan E Tenorio Arzola, Andrew Shatz, Thomas Nguyen
+Project: 2nd Deliverable
+
+*/
 #include "Lexer.h"
 #include "Token.h"
 #include <string>
@@ -12,12 +17,16 @@
 #include <fstream>
 #include <sstream>
 
+
+int Lexer::counter = 1;
+
 Lexer::Lexer(std::string filename) {
+	this->filename = filename;
+	fp.open(filename);
 	
-	Analyze(filename);
 }
 
-Token Lexer::nextToken(std::ifstream& fp) {
+Token Lexer::nextToken() {
 	
 	int state = 1;
 	int digit;
@@ -25,7 +34,6 @@ Token Lexer::nextToken(std::ifstream& fp) {
 	char ch;
 	ch = fp.get();
 	bool skipped = false;
-
 	while (true)
 	{
 
@@ -37,7 +45,6 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 			fp.close();
 
-			return Token(true);
 
 		}
 
@@ -51,37 +58,47 @@ Token Lexer::nextToken(std::ifstream& fp) {
 			{
 			case '(':
 
-				return Token("LP", "(");
+				return Token("LP", "(", counter);
 
 			case ')':
 
-				return Token("RP", ")");
+				return Token("RP", ")", counter);
 
 			case '{':
 
-				return Token("LB", "{");
+				return Token("LC", "{", counter);
 
 			case '}':
 
-				return Token("RP", "}");
+				return Token("RC", "}", counter);
 
-			case ' ':
+			case '[':
+				return Token("LB", "[", counter);
+
+			case ']':
+				return Token("RB", "]", counter);
+
+
 			case '\n':
+				ch = fp.get(); // spaces can be ignored
+				counter++;
+				continue;
 			case '\b':
 			case '\f':
 			case '\r':
 			case '\t':
+			case ' ':
 				ch = fp.get(); // spaces can be ignored
-
+				
 				continue;
 
 			case '.':
 
-				return Token("PD", ".");
+				return Token("PD", ".", counter);
 
 			case '+':
 
-				return Token("SM", "+");
+				return Token("SM", "+",counter);
 
 			case '=':
 
@@ -97,11 +114,11 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 			case '*':
 
-				return Token("MUL", "*");
+				return Token("MUL", "*",counter);
 
 			case '/':
 
-				return Token("DIV", "/");
+				return Token("DIV", "/",counter);
 
 			default:
 				state = 2;
@@ -136,7 +153,7 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 			else {
 
-				return Token("NUM", std::to_string(digit));
+				return Token("NUM", std::to_string(digit),counter);
 
 			}
 
@@ -156,7 +173,7 @@ Token Lexer::nextToken(std::ifstream& fp) {
 			else {
 				alphaBuffer = "";
 				alphaBuffer += ch;
-				return Token("INVALID: ", alphaBuffer);
+				return Token("INVALID: ", alphaBuffer,counter);
 			}
 
 			continue;
@@ -175,12 +192,12 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 				fp.unget();
 
-				if (alphaBuffer == "int" || alphaBuffer == "end" || alphaBuffer == "end" ||
-					alphaBuffer == "if" || alphaBuffer == "while" || alphaBuffer == "not") {
-					return Token("KW", alphaBuffer);
+				if (alphaBuffer == "then" || alphaBuffer == "type" || alphaBuffer == "local" || alphaBuffer == "end" ||
+					alphaBuffer == "if" || alphaBuffer == "while" || alphaBuffer == "not" || alphaBuffer == "do") {
+					return Token("KW", alphaBuffer,counter);
 				}
 
-				return Token("ID", alphaBuffer);
+				return Token("ID", alphaBuffer,counter);
 			}
 
 			continue;
@@ -189,11 +206,11 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 			if (ch == '=') {
 				
-				return Token("IEQ", "==");
+				return Token("IEQ", "==",counter);
 			}
 
 			else {
-				return Token("EQ", "=");
+				return Token("EQ", "=",counter);
 			}
 
 		case 7:
@@ -206,7 +223,7 @@ Token Lexer::nextToken(std::ifstream& fp) {
 			}
 
 			else {
-				return Token("SUB", "-");
+				return Token("SUB", "-",counter);
 			}
 			continue;
 
@@ -219,7 +236,7 @@ Token Lexer::nextToken(std::ifstream& fp) {
 				ch = fp.get();
 			}
 			else {
-				return Token("COM", alphaBuffer);
+				return Token("COM", alphaBuffer,counter);
 			}
 
 			continue;
@@ -237,34 +254,3 @@ Token Lexer::nextToken(std::ifstream& fp) {
 
 }
 
-void Lexer::Analyze(std::string filename)
-{
-
-	std::ifstream fp;
-	fp.open(filename);
-
-	if (fp.fail()) {
-		std::cout << ("--Could not find file") << std::endl;
-		std::cout << ("--Check the path") << std::endl;
-
-		return exit(1);
-	}
-
-	std::ofstream output("output.txt");
-	
-	Token out(false);
-	out = nextToken(fp);
-	while (fp) {
-
-		output << out.getToken();
-		output << " ";
-		output << out.getLexeme();
-		output << std::endl;
-		out = nextToken(fp);
-
-
-	}
-
-	exit(1);
-
-}
